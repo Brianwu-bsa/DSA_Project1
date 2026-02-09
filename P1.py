@@ -62,7 +62,7 @@ class DataProcessor:
         plt.show()
 
     def plot_sorting_performance(self):
-        sizes = [100, 500, 1000]
+        sizes = [100, 300, 500, 800, 1000]  # more data points for fancier graph
         times_insertion = []
         times_merge = []
         times_quick = []
@@ -211,9 +211,8 @@ class DataProcessor:
             return i + 1
     
         # create a copy of the data to avoid modifying the original
-        sorted_data = copy.deepcopy(data)
-        _quick_sort(sorted_data, low, high)
-        return sorted_data
+        _quick_sort(data, low, high)
+        return data
 
     def linear_search(self, data, column_name: str, value) -> int:
         column_index = self.get_col_index(column_name)
@@ -277,7 +276,7 @@ class DataProcessor:
         print(f"Searching for '{fail}': Result Index {result}")
 
         print(f"\nBinary")
-        sorted_data = self.quick_sort(self.data_2d, "area")
+        sorted_data = self.merge_sort(self.data_2d, "area")
 
         # Success
         result = self.binary_search(sorted_data, "area", success)
@@ -290,4 +289,11 @@ class DataProcessor:
 
 if __name__ == "__main__":
     data_processor = DataProcessor("covid19cases_test.csv")
+    data_processor.perform_search()
+    # data_processor.plot_sorting_performance()
     # data_processor.plot_bar_chart(data_processor.data_2d, "area", "cases", "Top 10 Areas by Cases (Unsorted)")
+
+    # print("Merge Sort test")
+    # print("Areas should be alphabetically ordered")
+    # data_processor.merge_sort(data_processor.data_2d, "area")
+    # data_processor.print_data()
