@@ -71,23 +71,39 @@ class DataProcessor:
 
     def linear_search(self, data, column_name: str, value) -> int:
         column_index = self.get_col_index(column_name)
-        target = str(value).strip().lower()
-
+        
         for i, row in enumerate(data):
-            if str(row[column_index]).strip().lower() == target:
+            current_val = row[column_index]
+            
+            if current_val == value:
                 return i
+            
+            if isinstance(current_val, str) and isinstance(value, str):
+                if current_val.strip().lower() == value.strip().lower():
+                    return i
+
         return -1
 
 
     def binary_search(self, data, column_name, value):
         column_index = self.get_col_index(column_name)
-        target = str(value).strip().lower()
-        sorted_data = self.quizk_sort(data)
-        low, high = 0, len(sorted_data) - 1
+        low = 0
+        high = len(data) - 1
+
+        is_string_search = isinstance(value, str)
+        if is_string_search:
+            target = value.strip().lower()
+        else:
+            target = value
 
         while low <= high:
             mid = (low + high) // 2
-            mid_val = str(sorted_data[mid][column_index]).strip().lower()
+            mid_row = data[mid][column_index]
+
+            if is_string_search:
+                mid_val = str(mid_row).strip().lower()
+            else:
+                mid_val = mid_row
 
             if mid_val == target:
                 return mid
