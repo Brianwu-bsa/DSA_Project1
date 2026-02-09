@@ -107,8 +107,27 @@ class DataProcessor:
         plt.show()
 
     def insertion_sort(self, data, column_name):
+        """
+        Insertion Sort Algorithm
+        :param data: 2d list representing the data to be sorted
+        :param column_name: The column name we want to sort by
+        :return: The sorted data
+        """
         col_index = self.get_col_index(column_name)
-        pass
+        # we start from the second element since we consider the first element as sorted
+        for i in range(1, len(data)):
+            key_row =data[i] # the row we want to insert into the sorted part
+            key_value = key_row[col_index] # the value we want to sort by
+
+            j = i - 1
+            # we want to shift the elements in the sorted part to the right until we find the correct position for the key_row
+            while j>=0 and data[j][col_index] > key_value:
+                data[j+1] = data[j]
+                j-=1
+
+        # insert the key_row into the correct position
+            data[j+1] = key_row
+        return data
 
 
     def merge_sort(self, data, column_name):
@@ -153,8 +172,47 @@ class DataProcessor:
 
         return data
     def quick_sort(self, data, column_name, low, high):
-        pass
-
+        """
+        Quicksort Algorithm
+        :param data: The 2D list of data to be sorted
+        :param column_name: The column to be sorted by
+        :param low: The lower bound of the sorting range
+        :param high: The upper bound of the sorting range
+        :return: The sorted data
+        """
+        col_index = self.get_col_index(column_name)
+        def _quick_sort(data, low, high):
+            if low < high:
+                # Partitioning index
+                pi = _partition(data, low, high)
+                
+                # Recursively sort elements before partition
+                _quick_sort(data, low, pi - 1)
+                
+                # Recursively sort elements after partition
+                _quick_sort(data, pi + 1, high)
+        def _partition(data, low, high):
+            # choose the last element as pivot
+            pivot = data[high][col_index]
+            
+            # index of the smaller element
+            i = low - 1
+            
+            # traverse through all elements
+            for j in range(low, high):
+                if data[j][col_index] <= pivot:
+                    i += 1
+                    # swap data[i] and data[j]
+                    data[i], data[j] = data[j], data[i]
+            
+            # swap data[i + 1] and data[high] (or pivot)
+            data[i + 1], data[high] = data[high], data[i + 1]
+            return i + 1
+    
+        # create a copy of the data to avoid modifying the original
+        sorted_data = copy.deepcopy(data)
+        _quick_sort(sorted_data, low, high)
+        return sorted_data
 
 
 if __name__ == "__main__":
