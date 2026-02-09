@@ -112,6 +112,9 @@ class DataProcessor:
             mid = (low + high) // 2
             cmp = self.compare(sorted_data[mid][index], value)
 
+            if cmp is None:
+                return -1
+        
             if cmp == 0:
                 return mid
             elif cmp < 0:
