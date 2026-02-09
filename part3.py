@@ -118,9 +118,31 @@ class DataProcessor:
 
         return -1
 
+
     def perform_search(self):
-        self.linear_search(self.data_2d, "area", "Yuba")
-        self.binary_search(self.data_2d, "area", "Yuba")
+            success = "Alameda"
+            fail = "Meatball"
+            
+            print(f"\nLinear")
+            # Success
+            result = self.linear_search(self.data_2d, "area", success)
+            print(f"Searching for '{success}': Result Index {result}")
+            
+            # Failure
+            result = self.linear_search(self.data_2d, "area", fail)
+            print(f"Searching for '{fail}': Result Index {result}")
+
+
+            print(f"\nBinary")
+            sorted_data = self.quick_sort(self.data_2d, "area") 
+
+            # Success
+            result = self.binary_search(sorted_data, "area", success)
+            print(f"Searching for '{success}': Result Index {result}")
+            
+            # Failure
+            result = self.binary_search(sorted_data, "area", fail)
+            print(f"Searching for '{fail}': Result Index {result}")
 
 
 if __name__ == "__main__":
