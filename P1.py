@@ -214,77 +214,86 @@ class DataProcessor:
         _quick_sort(data, low, high)
         return data
 
-    def linear_search(self, data, column_name: str, value) -> int:
-        column_index = self.get_col_index(column_name)
+    def str_check(self, v):
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
 
-        target = value
 
-        is_string_search = isinstance(value, str)
-        if is_string_search:
-            target = target.strip().lower()
+    def compare(self, a, b):
+        a = self.str_check(a)
+        b = self.str_check(b)
+
+        # numeric compare
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            if a == b:
+                return 0
+            return -1 if a < b else 1
+
+        # string compare
+        if isinstance(a, str) and isinstance(b, str):
+            if a == b:
+                return 0
+            return -1 if a < b else 1
+
+        return None
+
+
+    def linear_search(self, data, column_name, value):
+        index = self.get_col_index(column_name)
 
         for i, row in enumerate(data):
-            current_val = row[column_index]
-
-            if current_val == value:
+            if self.compare(row[index], value) == 0:
                 return i
-
-            if is_string_search:
-                if current_val.strip().lower() == target:
-                    return i
 
         return -1
 
-    def binary_search(self, data, column_name, value):
-        column_index = self.get_col_index(column_name)
-        low = 0
-        high = len(data) - 1
 
-        target = value
-
-        is_string_search = isinstance(value, str)
-        if is_string_search:
-            target = value.strip().lower()
+    def binary_search(self, sorted_data, column_name, value):
+        index = self.get_col_index(column_name)
+        low, high = 0, len(sorted_data) - 1
 
         while low <= high:
             mid = (low + high) // 2
-            mid_val = data[mid][column_index]
+            cmp = self.compare(sorted_data[mid][index], value)
 
-            if is_string_search:
-                mid_val = str(mid_val).strip().lower()
-
-            if mid_val == target:
+            if cmp is None:
+                return -1
+        
+            if cmp == 0:
                 return mid
-            elif mid_val < target:
+            elif cmp < 0:
                 low = mid + 1
             else:
                 high = mid - 1
 
         return -1
 
+
     def perform_search(self):
-        success = "Alameda"
-        fail = "Meatball"
+            success = "Alameda"
+            fail = "Meatball"
+            
+            print(f"\nLinear")
+            # Success
+            result = self.linear_search(self.data_2d, "area", success)
+            print(f"Searching for '{success}': Result Index {result}")
+            
+            # Failure
+            result = self.linear_search(self.data_2d, "area", fail)
+            print(f"Searching for '{fail}': Result Index {result}")
 
-        print(f"\nLinear")
-        # Success
-        result = self.linear_search(self.data_2d, "area", success)
-        print(f"Searching for '{success}': Result Index {result}")
 
-        # Failure
-        result = self.linear_search(self.data_2d, "area", fail)
-        print(f"Searching for '{fail}': Result Index {result}")
+            print(f"\nBinary")
+            sorted_data = self.quick_sort(self.data_2d, "area") 
 
-        print(f"\nBinary")
-        sorted_data = self.merge_sort(self.data_2d, "area")
-
-        # Success
-        result = self.binary_search(sorted_data, "area", success)
-        print(f"Searching for '{success}': Result Index {result}")
-
-        # Failure
-        result = self.binary_search(sorted_data, "area", fail)
-        print(f"Searching for '{fail}': Result Index {result}")
+            # Success
+            result = self.binary_search(sorted_data, "area", success)
+            print(f"Searching for '{success}': Result Index {result}")
+            
+            # Failure
+            result = self.binary_search(sorted_data, "area", fail)
+            print(f"Searching for '{fail}': Result Index {result}")
 
 
 if __name__ == "__main__":
