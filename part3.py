@@ -71,6 +71,12 @@ class DataProcessor:
 
     def linear_search(self, data, column_name: str, value) -> int:
         column_index = self.get_col_index(column_name)
+
+        target = value
+
+        is_string_search = isinstance(value, str)
+        if is_string_search:
+            target = target.strip().lower()
         
         for i, row in enumerate(data):
             current_val = row[column_index]
@@ -78,8 +84,8 @@ class DataProcessor:
             if current_val == value:
                 return i
             
-            if isinstance(current_val, str) and isinstance(value, str):
-                if current_val.strip().lower() == value.strip().lower():
+            if is_string_search:
+                if current_val.strip().lower() == target:
                     return i
 
         return -1
@@ -90,20 +96,18 @@ class DataProcessor:
         low = 0
         high = len(data) - 1
 
+        target = value
+
         is_string_search = isinstance(value, str)
         if is_string_search:
             target = value.strip().lower()
-        else:
-            target = value
 
         while low <= high:
             mid = (low + high) // 2
-            mid_row = data[mid][column_index]
+            mid_val = data[mid][column_index]
 
             if is_string_search:
-                mid_val = str(mid_row).strip().lower()
-            else:
-                mid_val = mid_row
+                mid_val = str(mid_val).strip().lower()
 
             if mid_val == target:
                 return mid
