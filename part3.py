@@ -69,21 +69,37 @@ class DataProcessor:
     #
     # def merge_sort(self):
 
-    def linear_search(self, data, column_name, value):
-        index_to_search = self.get_col_index(column_name)
+    def linear_search(self, data, column_name: str, value) -> int:
+        column_index = self.get_col_index(column_name)
+        target = str(value).strip().lower()
+
+        for i, row in enumerate(data):
+            if str(row[column_index]).strip().lower() == target:
+                return i
+        return -1
+
 
     def binary_search(self, data, column_name, value):
-        index_to_search = self.get_col_index(column_name)
+        column_index = self.get_col_index(column_name)
+        target = str(value).strip().lower()
+        sorted_data = self.quizk_sort(data)
+        low, high = 0, len(sorted_data) - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+            mid_val = str(sorted_data[mid][column_index]).strip().lower()
+
+            if mid_val == target:
+                return mid
+            elif mid_val < target:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return -1
 
     def perform_search(self):
-
-        # successful search
-        # search for column area
-        data = self.insertion_sort("area")
         self.linear_search(self.data_2d, "area", "Yuba")
-        self.binary_search(data, "area", "Yuba")
-
-        # unsucessful search
         self.binary_search(self.data_2d, "area", "Yuba")
 
 
