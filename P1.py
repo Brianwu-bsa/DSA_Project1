@@ -141,8 +141,8 @@ class DataProcessor:
             left = data[:mid]
             right = data[mid:]
 
-            self.merge_sort(left, column_name)  # split it until 1 element remains
-            self.merge_sort(right, column_name)
+            left = self.merge_sort(left, column_name)  # split it until 1 element remains
+            right = self.merge_sort(right, column_name)
 
             i = j = k = 0
             # i for the keeping track of the left index
@@ -172,47 +172,28 @@ class DataProcessor:
                 k += 1
 
         return data
+
     def quick_sort(self, data, column_name, low, high):
-        """
-        Quicksort Algorithm
-        :param data: The 2D list of data to be sorted
-        :param column_name: The column to be sorted by
-        :param low: The lower bound of the sorting range
-        :param high: The upper bound of the sorting range
-        :return: The sorted data
-        """
         col_index = self.get_col_index(column_name)
-        def _quick_sort(data, low, high):
-            if low < high:
-                # Partitioning index
-                pi = _partition(data, low, high)
-                
-                # Recursively sort elements before partition
-                _quick_sort(data, low, pi - 1)
-                
-                # Recursively sort elements after partition
-                _quick_sort(data, pi + 1, high)
-        def _partition(data, low, high):
-            # choose the last element as pivot
-            pivot = data[high][col_index]
-            
-            # index of the smaller element
-            i = low - 1
-            
-            # traverse through all elements
-            for j in range(low, high):
-                if data[j][col_index] <= pivot:
-                    i += 1
-                    # swap data[i] and data[j]
-                    data[i], data[j] = data[j], data[i]
-            
-            # swap data[i + 1] and data[high] (or pivot)
-            data[i + 1], data[high] = data[high], data[i + 1]
-            return i + 1
-    
-        # create a copy of the data to avoid modifying the original
-        _quick_sort(data, low, high)
+
+        if low < high:
+            # Partitioning index
+            pi = self._partition(data, col_index, low, high)
+
+            # Recursively sort elements before partition and after partition
+            self.quick_sort(data, column_name, low, pi - 1)
+            self.quick_sort(data, column_name, pi + 1, high)
         return data
+
+    def _partition(self, data, col_index, low, high):
+        pivot = data[high][col_index]
+        i = low - 1
+        for j in range(low, high):
+            if data[j][col_index] <= pivot:
+                i += 1
+                data[i], data[j] = data[j], data[i]
+        data[i + 1], data[high] = data[high], data[i + 1]
+        return i + 1
 
     def str_check(self, v):
         if isinstance(v, str):
@@ -285,7 +266,7 @@ class DataProcessor:
 
 
             print(f"\nBinary")
-            sorted_data = self.quick_sort(self.data_2d, "area") 
+            sorted_data = self.merge_sort(self.data_2d, "area")
 
             # Success
             result = self.binary_search(sorted_data, "area", success)
@@ -298,11 +279,10 @@ class DataProcessor:
 
 if __name__ == "__main__":
     data_processor = DataProcessor("covid19cases_test.csv")
-    data_processor.perform_search()
-    # data_processor.plot_sorting_performance()
-    # data_processor.plot_bar_chart(data_processor.data_2d, "area", "cases", "Top 10 Areas by Cases (Unsorted)")
+    data_processor.plot_bar_chart(data_processor.data_2d,"area", "cases", "Top 10 Areas by Cases (Unsorted)")
 
-    # print("Merge Sort test")
-    # print("Areas should be alphabetically ordered")
-    # data_processor.merge_sort(data_processor.data_2d, "area")
-    # data_processor.print_data()
+    data_processor.plot_sorting_performance()
+    data_processor.perform_search()
+
+
+
