@@ -69,49 +69,52 @@ class DataProcessor:
     #
     # def merge_sort(self):
 
-    def linear_search(self, data, column_name: str, value) -> int:
-        column_index = self.get_col_index(column_name)
+    def str_check(self, v):
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
 
-        target = value
 
-        is_string_search = isinstance(value, str)
-        if is_string_search:
-            target = target.strip().lower()
-        
+    def compare(self, a, b):
+        a = self.str_check(a)
+        b = self.str_check(b)
+
+        # numeric compare
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            if a == b:
+                return 0
+            return -1 if a < b else 1
+
+        # string compare
+        if isinstance(a, str) and isinstance(b, str):
+            if a == b:
+                return 0
+            return -1 if a < b else 1
+
+        return None
+
+
+    def linear_search(self, data, column_name, value):
+        index = self.get_col_index(column_name)
+
         for i, row in enumerate(data):
-            current_val = row[column_index]
-            
-            if current_val == value:
+            if self.compare(row[index], value) == 0:
                 return i
-            
-            if is_string_search:
-                if current_val.strip().lower() == target:
-                    return i
 
         return -1
 
 
-    def binary_search(self, data, column_name, value):
-        column_index = self.get_col_index(column_name)
-        low = 0
-        high = len(data) - 1
-
-        target = value
-
-        is_string_search = isinstance(value, str)
-        if is_string_search:
-            target = value.strip().lower()
+    def binary_search(self, sorted_data, column_name, value):
+        index = self.get_col_index(column_name)
+        low, high = 0, len(sorted_data) - 1
 
         while low <= high:
             mid = (low + high) // 2
-            mid_val = data[mid][column_index]
+            cmp = self.compare(sorted_data[mid][index], value)
 
-            if is_string_search:
-                mid_val = str(mid_val).strip().lower()
-
-            if mid_val == target:
+            if cmp == 0:
                 return mid
-            elif mid_val < target:
+            elif cmp < 0:
                 low = mid + 1
             else:
                 high = mid - 1
