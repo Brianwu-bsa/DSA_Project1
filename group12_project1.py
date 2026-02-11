@@ -40,7 +40,7 @@ class DataProcessor:
     def plot_bar_chart(self, data, x_col, y_col, title):
         """
         :param x_col: The column for the x axis
-        :param y_col: The y-values we plot agains the x-asix
+        :param y_col: The y-values we plot against the x-asix
         :param title: The title of the graph
         :return:
         """
@@ -48,9 +48,13 @@ class DataProcessor:
         y_idx = self.get_col_index(y_col)
 
         # Extract data for plotting (first top_n rows)
+        # plot_data = data
         plot_data = data[:10]
         x_values = [str(row[x_idx]) for row in plot_data]
         y_values = [row[y_idx] for row in plot_data]
+        print(x_values)
+        print(y_values)
+        # raise ValueError
 
         plt.figure(figsize=(10, 6))
         plt.bar(x_values, y_values, color='skyblue')
@@ -58,7 +62,7 @@ class DataProcessor:
         plt.ylabel(y_col)
         plt.title(title)
         plt.xticks(rotation=45)
-        plt.tight_layout()
+        # plt.tight_layout()
         plt.show()
 
     def plot_sorting_performance(self):
@@ -276,13 +280,65 @@ class DataProcessor:
             result = self.binary_search(sorted_data, "area", fail)
             print(f"Searching for '{fail}': Result Index {result}")
 
+    def filter_max_row(self, data, group_col, max_col):
+        """
+        Groups by 'group_col' (e.g., Area) and keeps ONLY the row
+        that has the highest value in 'max_col' (e.g., Cases).
+
+        :return: A list of full rows (preserving original structure)
+        """
+        group_idx = self.get_col_index(group_col)
+        max_idx = self.get_col_index(max_col)
+
+        # Dictionary to store the "best" row found so far for each area
+        # Key = Area Name, Value = The entire Row
+        best_rows = {}
+
+        for row in data:
+            group_key = row[group_idx]
+            current_val = row[max_idx]
+
+            # clean data to ensure it is a number for comparison
+            try:
+                current_val = float(current_val)
+            except ValueError:
+                current_val = 0.0
+
+            # Logic: If we haven't seen this Area before, OR
+            # if this row has more cases than the one we stored previously...
+            if group_key not in best_rows:
+                best_rows[group_key] = row
+            else:
+                # Compare with the stored row's value
+                stored_val = best_rows[group_key][max_idx]
+                try:
+                    stored_val = float(stored_val)
+                except ValueError:
+                    stored_val = 0.0
+
+                if current_val > stored_val:
+                    # Update with the new "better" row
+                    best_rows[group_key] = row
+
+        # Convert the dictionary values back into a list of rows
+        return list(best_rows.values())
+
 
 if __name__ == "__main__":
     data_processor = DataProcessor("covid19cases_test.csv")
-    data_processor.plot_bar_chart(data_processor.data_2d,"area", "cases", "Top 10 Areas by Cases (Unsorted)")
+    # data_processor.plot_bar_chart(data_processor.data_2d,"area", "cases", "Top 10 Areas by Cases (Unsorted)")
+    #
+    # data_processor.plot_sorting_performance()
+    # data_processor.perform_search()
 
-    data_processor.plot_sorting_performance()
-    data_processor.perform_search()
+    filtered_data = data_processor.filter_max_row(data_processor.data_2d, "area", "cases")
+    sorted_data_2d = data_processor.merge_sort(filtered_data, "cases")
+    # sorted_data_2d = sorted_data_2d[-10:]
+    # for row in sorted_data_2d:
+    #     cases = row[4]
+    #     print(cases)
+    # raise ValueError
+    data_processor.plot_bar_chart(sorted_data_2d,"area", "cases", "Top 10 Areas by Cases (Unsorted)")
 
 
 
